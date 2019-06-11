@@ -3,12 +3,14 @@ import logo from './logo.svg';
 import './App.css';
 
 import { IncrementChanger} from './timer';
+import { TodoListItem, TodoList} from './todolist';
 
 function App() {
   return (
     
     <div className="App">
       <IncrementChanger />
+      <TodoList/>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
