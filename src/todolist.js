@@ -5,27 +5,39 @@ class TodoList extends Component{
     constructor(props){
         super(props)
         this.state = {tasks:[]};
+
+        this.taskId=-1;
     }
 
    
     onChange = (e) => {
         if (!e || !e.target || !e.target || !e.target.value) { return; }
 
-        this.state = { ...this.state, currentTask: e.target.value}
+        this.state = { ...this.state, taskName: e.target.value}
     }
-    onClick = (e) => {
+    onClick = (e) => {        
         let newArr = [...this.state.tasks];
-        newArr.push(this.state.currentTask);
+        newArr.push({ taskName: this.state.taskName, id: this.taskId+=1});
         this.setState( { ...this.state, tasks: newArr});
     }
 
+    onRemove = (item) => {     
+        let arr = this.state.tasks.filter(s=>s.id!==item.id);
+        this.setState({...this.state,tasks:arr});
+    }
+    done = (item) =>{
+        let oldItem = this.state.tasks.filter(s => s.id === item.id);
+        oldItem[0] = item;
+        oldItem[0].done=true;
+        this.setState({ ...this.state});
+    }
 
     itemsList(){
         if (this.state && this.state.tasks && Array.isArray(this.state.tasks) && this.state.tasks.length>0){            
             return(
                 <div>
                     {this.state.tasks.map((s)=> 
-                        <TodoListItem task={s} />
+                        <TodoListItem task={s} onRemove={this.onRemove} done={this.done}/>
                     )}
                 </div>
             )
@@ -53,7 +65,7 @@ class TodoListItem extends Component{
     constructor(props){
         super(props);
 
-        this.state = { task: props.task};
+        //this.state = { task: props.task};
     }
 
     onChange = (e) =>
@@ -68,34 +80,38 @@ class TodoListItem extends Component{
     {
         console.log('onClick')
         if(!e || !e.target || !e.target){return;}
-
-        this.setState({ ...this.state,done:true});
+        this.props.done(this.props.task)
     }
+    remove =(e)=>{
+        console.log('remove')
 
+        this.props.onRemove(this.props.task);
+    }
     inputOrTask = () => {
-        if(this.state.done){
+        if (this.props.task.done){
             return(
                 <div>
                     &lt;-
-                    {this.state.comment}
+                    {this.props.comment}
                     ->
-                    {this.props.task}
+                    {this.props.task.taskName}
                 </div>
             )
         }else{
             return(
                 <div>
                     ->
-                    {this.props.task}
+                    {this.props.task.taskName}
                     <input type="text" onChange={this.onChange}></input>
                     <button onClick={this.onClick}>Done</button>
+                    <button onClick={this.remove}>Remove</button>
                 </div>
             )
         }
     }
     render(){
-        if (this.state.task) {
-            const done = this.state.done;
+        if (this.props.task) {
+            const done = this.props.task.done;
             return(            
                 <div>             
                     {this.inputOrTask()}                    
